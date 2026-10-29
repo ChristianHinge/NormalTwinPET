@@ -1,0 +1,29 @@
+[project]
+name = "normaltwinpet"
+version = "0.1.0"
+description = "Generate a normal twin PET from a CT with a 3D UNet"
+readme = "README.md"
+authors = [
+    { name = "Christian Hinge", email = "christian@hingepedersen.dk" }
+]
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "nibabel",
+    "platformdirs",
+    "tqdm",
+    "scipy",
+    "torch",
+    "torchio",
+]
+
+[project.urls]
+Homepage = "https://github.com/christianhinge/NormalTwinPet"
+
+[project.scripts]
+normaltwinpet = "normaltwinpet.main:main"
+
+[build-system]
+requires = ["uv_build>=0.8.16,<0.9.0"]
+build-backend = "uv_build"
