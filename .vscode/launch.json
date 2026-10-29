@@ -9,7 +9,8 @@
             "type": "debugpy",
             "request": "launch",
             "module": "normaltwinpet.main",
-            "args": [],
+            "args": ["-i", "ct.nii.gz", "-o", "out.nii.gz"],
+            "env": {"NORMALTWINPET_HOME": "${workspaceFolder}/weights"},
             "console": "integratedTerminal",
             "justMyCode": true
         }

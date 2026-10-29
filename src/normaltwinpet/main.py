@@ -10,7 +10,7 @@ from .transforms import InPlaneCropOrPad
 from .weights import get_weights
 
 
-def predict(ct_path, device):
+def predict(ct_path, device, batch_size):
     unet = UNet(n_conv_layers=4, n_channels_in=1)
     unet.load_state_dict(torch.load(get_weights(), map_location="cpu", weights_only=True))
     unet.to(device).eval()
@@ -18,7 +18,7 @@ def predict(ct_path, device):
     stitcher = GennormStitcher(
         edge_to_center_ratio=0.3,
         patch_overlap=[0, 0, 0],
-        batch_size=2,
+        batch_size=batch_size,
         beta=3,
         patch_size=(192, 192, 32),
         device=device,
@@ -50,9 +50,16 @@ def main():
         "-d", "--device", default="cuda" if torch.cuda.is_available() else "cpu",
         help="Torch device (default: cuda if available, else cpu)",
     )
+    parser.add_argument(
+        "-b", "--batch-size", type=int, default=None,
+        help="Patches per forward pass; lower it if you run out of memory "
+        "(default: 2 on cuda, 1 otherwise)",
+    )
     args = parser.parse_args()
 
-    ntpet = predict(args.input, torch.device(args.device))
+    device = torch.device(args.device)
+    batch_size = args.batch_size or (2 if device.type == "cuda" else 1)
+    ntpet = predict(args.input, device, batch_size)
     arr = ntpet.numpy().squeeze().astype("float32")
     nib.save(nib.Nifti1Image(arr, ntpet.affine), args.output)
 
