@@ -11,13 +11,13 @@ REPO = "christianhinge/NormalTwinPet"
 
 # Add new weights here. "tag" is the GitHub release tag that hosts the asset.
 WEIGHTS = {
-    "ct-v1": {
-        "tag": "weights-ct-v1",
-        "filename": "ntpet_ct_v1.pt",
+    "test-v1": {
+        "tag": "weights-test-v1",
+        "filename": "ntpet_test_v1.pt",
         "sha256": "6ce940b7d8c7d7f82f62e4c25caa3992d57d42ca8c391d2af17641cda25e4c5d",
     },
 }
-DEFAULT_WEIGHTS = "ct-v1"
+DEFAULT_WEIGHTS = "test-v1"
 
 
 def weights_dir() -> Path:
