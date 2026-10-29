@@ -1,6 +1,6 @@
 [project]
 name = "normaltwinpet"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generate a normal twin PET from a CT with a 3D UNet"
 readme = "README.md"
 authors = [
