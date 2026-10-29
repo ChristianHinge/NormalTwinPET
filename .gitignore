@@ -13,3 +13,6 @@ wheels/
 *.nii
 *.nii.gz
 *.pt
+
+# Local notes
+RELEASING.md
