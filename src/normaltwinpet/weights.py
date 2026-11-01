@@ -16,8 +16,13 @@ WEIGHTS = {
         "filename": "ntpet_test_v1.pt",
         "sha256": "6ce940b7d8c7d7f82f62e4c25caa3992d57d42ca8c391d2af17641cda25e4c5d",
     },
+    "v1": {
+        "tag": "weights-v1",
+        "filename": "ntpet_v1.pt",
+        "sha256": "fa75d6ca3dfc6256316a3bd4d4eb3f1c1be883ec2eee7412c0d31ef350c2ed6c",
+    },
 }
-DEFAULT_WEIGHTS = "test-v1"
+DEFAULT_WEIGHTS = "v1"
 
 
 def weights_dir() -> Path:

@@ -16,11 +16,11 @@ def predict(ct_path, device, batch_size):
     unet.to(device).eval()
 
     stitcher = GennormStitcher(
-        edge_to_center_ratio=0.3,
-        patch_overlap=[0, 0, 0],
+        edge_to_center_ratio=0.1,
+        patch_overlap=[0, 0, 80],
         batch_size=batch_size,
         beta=3,
-        patch_size=(192, 192, 32),
+        patch_size=(256, 256, 96),
         device=device,
     )
 
@@ -42,7 +42,11 @@ def predict(ct_path, device, batch_size):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate a normal twin PET (image-derived lean-body-mass SUV) from a CT image."
+        description="Generate a normal twin PET from a CT image.",
+        epilog="The output intensity is image-derived lean-body-mass SUV (SUL), i.e. "
+        "the PET is normalized to lean body mass, with lean body mass and injected acticity "
+        "estimated from the images themselves (https://github.com/christianhinge/ID-uptake-values). "
+        "It is not conventional body-weight SUV.",
     )
     parser.add_argument("-i", "--input", required=True, help="Input CT (NIfTI)")
     parser.add_argument("-o", "--output", required=True, help="Output normal twin PET (NIfTI)")
@@ -62,6 +66,7 @@ def main():
     ntpet = predict(args.input, device, batch_size)
     arr = ntpet.numpy().squeeze().astype("float32")
     nib.save(nib.Nifti1Image(arr, ntpet.affine), args.output)
+    print(f"Saved normal twin PET to {args.output}")
 
 
 if __name__ == "__main__":
