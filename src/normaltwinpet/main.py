@@ -1,13 +1,23 @@
 import argparse
 
 import nibabel as nib
+import numpy as np
 import torch
 import torchio as tio
+from scipy.ndimage import binary_fill_holes
 
 from .net import UNet
 from .stitcher import GennormStitcher
 from .transforms import InPlaneCropOrPad
 from .weights import get_weights
+
+
+def recon_circle_mask(ct):
+    """CT voxels outside the reconstruction circle are padded with a value <= -1023 HU.
+    The circle is the axial footprint of everything above that, with holes filled."""
+    mask = (ct.numpy()[0] > -1023).any(axis=2, keepdims=True)
+    mask = binary_fill_holes(mask)
+    return np.broadcast_to(mask, ct.shape[1:])
 
 
 def predict(ct_path, device, batch_size):
@@ -37,7 +47,12 @@ def predict(ct_path, device, batch_size):
     ntpet = stitcher(unet, {"ct": ct})
     ntpet = tio.ScalarImage(tensor=ntpet, affine=ct.affine)
     # Back onto the input CT grid so the output overlays the CT voxel-for-voxel
-    return tio.Resample(target=original)(ntpet)
+    ntpet = tio.Resample(target=original)(ntpet)
+    # No CT signal outside the reconstruction circle, so zero the PET there
+    ntpet.set_data(ntpet.data * torch.from_numpy(recon_circle_mask(original).copy())[None])
+    # Activity cannot be negative
+    ntpet.set_data(ntpet.data.clamp(min=0))
+    return ntpet
 
 
 def main():
